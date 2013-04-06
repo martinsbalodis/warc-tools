@@ -6,6 +6,7 @@ import re
 from hanzo.warctools.stream import open_record_stream
 
 strip = re.compile(r'[^\w\t \|\\\/]')
+content_content_type = re.compile("Content-Type: (.*?)\r")
 
 
 def add_headers(**kwargs):
@@ -59,12 +60,19 @@ class ArchiveRecord(object):
         return self.content[0]
 
     @property
+    def content_content_type(self):
+        return content_content_type.search(self.content[1]).group(1)
+
+    @property
     def content_length(self):
         return len(self.content[1])
 
     @property
     def url(self):
         return self.get_header(self.URL)
+
+    def is_response(self):
+            return self.content_type == 'application/http; msgtype=response'
 
     def get_header(self, name):
         for k, v in self.headers:
