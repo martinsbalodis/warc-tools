@@ -62,7 +62,10 @@ class ArchiveRecord(object):
 
     @property
     def content_content_type(self):
-        return content_content_type.search(self.content[1]).group(1)
+        matches = content_content_type.search(self.content[1])
+        if matches == None:
+            return None
+        return matches.group(1)
 
     @property
     def content_length(self):
