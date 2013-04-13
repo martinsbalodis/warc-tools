@@ -2,6 +2,7 @@
 
 from gzip import GzipFile
 import re
+import urlparse
 
 from hanzo.warctools.stream import open_record_stream
 
@@ -70,6 +71,11 @@ class ArchiveRecord(object):
     @property
     def url(self):
         return self.get_header(self.URL)
+
+    @property
+    def domain_name(self):
+        url = self.get_header(self.URL)
+        return urlparse.urlparse(url).netloc
 
     def is_response(self):
             return self.content_type == 'application/http; msgtype=response'
