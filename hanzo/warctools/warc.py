@@ -259,7 +259,30 @@ class WarcParser(ArchiveParser):
 
             # read content
             if content_length is not None:
-                if content_length > 0:
+
+                # just skip large files
+                if content_length > 16e6:
+                    # content = []
+                    length = 0
+
+                    # print the large file header data
+                    line = stream.readline()
+                    print record.headers
+                    length += len(line)
+
+                    while length < content_length:
+                        line = stream.readline()
+                        if not line:
+                            # print 'no more data'
+                            break
+                        length += len(line)
+                    record.content = (content_type, "")
+                    if nl_rx.match(line):
+                        self.trailing_newlines = 1
+                    else:
+                        self.trailing_newlines = 2
+
+                elif content_length > 0:
                     content = []
                     length = 0
                     while length < content_length:
